@@ -1,6 +1,9 @@
 /*
  The ruleset is an array of [[endings], offset, from, in, to]
  where the MOST SIGNIFICANT MATCH is the latest.
+
+ An uppercase "A" in an ending is replaced with "a" or "ä" according to
+ the vowel harmony of the place name.
 */
 
 declare interface ConjugationRule {
@@ -41,8 +44,8 @@ export interface Conjugation {
 const ruleset: ConjugationRule[] = [
   // extremely stupid initial vowels
   [['a'], 0, 'sta', 'ssa', 'an', 'n'],
-  [['e'], 0, 'stä', 'ssä', 'en', 'n'],
-  [['i'], 0, 'stä', 'ssä', 'in', 'n'],
+  [['e'], 0, 'stA', 'ssA', 'en', 'n'],
+  [['i'], 0, 'stA', 'ssA', 'in', 'n'],
   [['o'], 0, 'sta', 'ssa', 'on', 'n'],
   [['u'], 0, 'sta', 'ssa', 'un', 'n'],
   [['y'], 0, 'stä', 'ssä', 'yn', 'n'],
@@ -51,7 +54,7 @@ const ruleset: ConjugationRule[] = [
 
   // -ri -erityiset: pori, meri etc. + kajaani, olli yms
   [['pori', 'uri', 'ari', 'ani', 'lli'], 0, 'sta', 'ssa', 'in', 'n'],
-  [['meri', 'veri'], 1, 'essä', 'estä', 'ereen', 'en'],
+  [['meri', 'veri'], 1, 'estä', 'essä', 'een', 'en'],
 
   // s -päätteiset (Kannus, muhos, varkaus, karkaus)
   [['s'], 1, 'ksesta', 'ksessa', 'kseen', 'ksen'],
@@ -60,14 +63,20 @@ const ruleset: ConjugationRule[] = [
   [['as', 'es'], 1, 'ksesta', 'ksessa', 'kseen', 'ksen'],
   [['vus'], 1, 'delta', 'della', 'delle', 'den'],
 
+  // swedish -näs, like Korsnäs, Ekenäs
+  [['näs'], 0, 'istä', 'issä', 'iin', 'in'],
+
   // xxby, like Degerby
   [['by'], 0, 'stä', 'ssä', 'hyn', 'n'],
+
+  // -yy, like Kruunupyy, Uusikaarlepyy
+  [['yy'], 0, 'stä', 'ssä', 'hyn', 'n'],
 
   // naantali et al
   [['ali', 'oli', 'uli'], 0, 'sta', 'ssa', 'in', 'n'],
 
   // vihanti
-  [['nti'], 2, 'nilta', 'nilla', 'tiin', 'nin'],
+  [['nti'], 2, 'niltA', 'nillA', 'nille', 'nin'],
 
   // -valta etc.
   [['lta'], 2, 'lasta', 'lassa', 'taan', 'lan'],
@@ -76,7 +85,7 @@ const ruleset: ConjugationRule[] = [
   [['he'], 0, 'sta', 'ssa', 'en', 'n'],
 
   // vesanka
-  [['nka'], 3, 'ngasta', 'ngassa', 'ngalle', 'ngan'],
+  [['nka'], 3, 'ngasta', 'ngassa', 'nkaan', 'ngan'],
 
   // -kka
   [['kka'], 2, 'asta', 'assa', 'kaan', 'an'],
@@ -84,13 +93,19 @@ const ruleset: ConjugationRule[] = [
 
   // -nta, esim. maalaiskunta, lappeenranta
   [['nta'], 2, 'nasta', 'nassa', 'taan', 'nan'],
+  [['ntä'], 2, 'nästä', 'nässä', 'tään', 'nän'],
+  [['nto'], 2, 'nosta', 'nossa', 'toon', 'non'],
+
+  // -rta, like Leppävirta
+  [['rta'], 2, 'rasta', 'rassa', 'taan', 'ran'],
 
   // helsinki, hanko, nta, nki etc.
-  [['nki'], 3, 'ngistä', 'ngissä', 'nkiin', 'ngin'],
+  [['nki'], 3, 'ngistA', 'ngissA', 'nkiin', 'ngin'],
   [['nko'], 3, 'ngosta', 'ngossa', 'nkoon', 'ngon'],
 
   // tampere + kempele etc
   [['pere'], 0, 'elta', 'ella', 'elle', 'en'],
+  [['ele', 'ne'], 0, 'eltA', 'ellA', 'elle', 'en'],
   [['pele'], 0, 'eltä', 'ellä', 'elle', 'en'],
 
   // taipale
@@ -104,6 +119,7 @@ const ruleset: ConjugationRule[] = [
   [['ii'], 0, 'stä', 'ssä', 'hin', 'n'],
   [['uu'], 0, 'sta', 'ssa', 'hun', 'n'],
   [['aa', 'oo'], 0, 'sta', 'ssa', 'seen', 'n'],
+  [['ää'], 0, 'stä', 'ssä', 'seen', 'n'],
 
   [
     ['maa', 'taa', 'ria', 'pua', 'uma', 'tra', 'ava', 'jaa', 'ruu', 'kia', 'suo'],
@@ -115,7 +131,7 @@ const ruleset: ConjugationRule[] = [
   ],
 
   // hyvinkää
-  [['iä', 'kää', 'pää'], 0, 'ltä', 'llä', 'lle', 'n'],
+  [['iä', 'kää', 'pää', 'Pyhtää'], 0, 'ltä', 'llä', 'lle', 'n'],
 
   [['vik'], 0, 'istä', 'issä', 'iin', 'in'],
 
@@ -123,8 +139,8 @@ const ruleset: ConjugationRule[] = [
   [['eva', 'vio'], 0, 'lta', 'lla', 'lle', 'n'],
 
   // -mi päätteiset
-  [['mi'], 0, 'lta', 'lla', 'in', 'n'],
-  [['kemi'], 0, 'stä', 'ssä', 'in', 'n'],
+  [['mi'], 0, 'ltA', 'llA', 'lle', 'n'],
+  [['kemi', 'Kymi'], 0, 'stä', 'ssä', 'in', 'n'],
   [['jämi'], 0, 'ltä', 'llä', 'lle', 'n'],
 
   // inkeroinen, kauniainen, änkeröinen, kimpeläinen yms.
@@ -178,7 +194,7 @@ const ruleset: ConjugationRule[] = [
 
   // rajat, asemat, hotellit ja muut
   [['raja', 'asema'], 0, 'lta', 'lla', 'lle', 'n'],
-  [['hovi', 'li'], 0, 'sta', 'ssa', 'in', 'n'],
+  [['hovi', 'li'], 0, 'stA', 'ssA', 'in', 'n'],
 
   // -selkä
   [['selkä'], 2, 'ältä', 'ällä', 'älle', 'än'],
@@ -231,7 +247,7 @@ const ruleset: ConjugationRule[] = [
   [['Kinni'], 0, 'stä', 'ssä', 'in', 'n'],
   [['Jokioinen'], 3, 'silta', 'silla', 'sille', 'sten'],
 
-  [['lampi'], 2, 'mista', 'missa', 'mille', 'min'],
+  [['lampi'], 2, 'miltA', 'millA', 'mille', 'min'],
   [['korpi'], 2, 'vesta', 'vessa', 'peen', 'ven'],
   [['kangas'], 3, 'kaalta', 'kaalla', 'kaalle', 'kaan'],
   [['kytö'], 2, 'döstä', 'dössä', 'töön', 'dön'],
@@ -240,8 +256,22 @@ const ruleset: ConjugationRule[] = [
   [['kumpu'], 2, 'musta', 'mussa', 'puun', 'mun'],
   [['haka'], 4, 'haasta', 'haassa', 'hakaan', 'haan'],
   [['lähde'], 2, 'teeltä', 'teellä', 'teelle', 'teen'],
-  [['mies'], 1, 'hestä', 'hessä', 'helle', 'hen'],
+  [['mies'], 1, 'hestä', 'hessä', 'heen', 'hen'],
   [['kulma'], 0, 'lta', 'lla', 'lle', 'n'],
+
+  // municipalities using the external (-lla) cases
+  [['Lohja', 'Juva', 'Laihia', 'Karvia', 'Ranua'], 0, 'lta', 'lla', 'lle', 'n'],
+  [['Leppävirta'], 2, 'ralta', 'ralla', 'ralle', 'ran'],
+  [['Pyhäntä'], 2, 'nältä', 'nällä', 'nälle', 'nän'],
+  [['Vesanto'], 2, 'nolta', 'nolla', 'nolle', 'non'],
+
+  // consonant gradation one-offs
+  [['Vihti'], 2, 'distä', 'dissä', 'tiin', 'din'],
+  [['Juuka'], 2, 'asta', 'assa', 'kaan', 'an'],
+  [['laidun'], 3, 'tumelta', 'tumella', 'tumelle', 'tumen'],
+
+  // plural names
+  [['Virrat'], 4, 'rroilta', 'rroilla', 'rroille', 'rtojen'],
 
   // på svenska
 
@@ -257,15 +287,27 @@ const createFallback = (city: string): Conjugation => ({
   via: `kohteen ${city}`,
 })
 
+/**
+ * Vowel harmony: the last harmonic vowel decides. Back vowels (a, o, u) give
+ * back endings, front vowels (ä, ö, y) or only neutral vowels (e, i) give front.
+ */
+const hasBackVowels = (word: string): boolean => {
+  const vowels = word.toLowerCase().match(/[aouäöy]/g)
+  return vowels ? 'aou'.includes(vowels[vowels.length - 1]) : false
+}
+
 const createConjugation = (city: string) => (match: ConjugationRule) => {
   const prefix = city.slice(0, city.length - match[1])
+  const a = hasBackVowels(city) ? 'a' : 'ä'
+  // Uppercase "A" in an ending is a placeholder resolved by vowel harmony
+  const suffix = (ending: string) => ending.replace(/A/g, a)
 
   return {
     __self__: city,
-    from: `${prefix}${match[2]}`,
-    in: `${prefix}${match[3]}`,
-    to: `${prefix}${match[4]}`,
-    via: `${prefix}${match[5]}`,
+    from: `${prefix}${suffix(match[2])}`,
+    in: `${prefix}${suffix(match[3])}`,
+    to: `${prefix}${suffix(match[4])}`,
+    via: `${prefix}${suffix(match[5])}`,
   }
 }
 
